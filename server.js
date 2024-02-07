@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const auth = require('./routes')
 var mysql = require('mysql')
 app.use(bodyParser.json());
+//git
 // const pool = require('./dataabase')
 // const{ pool} = require('./repository/db');
 // pool;
