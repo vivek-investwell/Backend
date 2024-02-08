@@ -3,4 +3,5 @@ const lowercaseRegex = /[a-z]/;
 const digitRegex = /\d/;
 const specialRegex = /@/;
 const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-module.exports = {uppercaseRegex ,lowercaseRegex , digitRegex , specialRegex }
+const secretkey = 'vivek1209';
+module.exports = {uppercaseRegex ,lowercaseRegex , digitRegex , specialRegex ,secretkey}

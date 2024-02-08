@@ -64,4 +64,8 @@ const loginData = async (EMAIL, PASSWORD) => {
 //   return data;
 
 // };
-module.exports = {setData  , loginData ,con};
+const getData = async(ID)=>{
+  const data = await queryAsync(`SELECT id,name,email FROM users WHERE id ='${ID}'`);
+  return data;
+}
+module.exports = {setData  , loginData ,getData,con};

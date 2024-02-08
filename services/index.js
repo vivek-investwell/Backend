@@ -1,6 +1,5 @@
 // const {setData, loginData }= require("../repository/db")
-const {setData, loginData }= require("../repository/db2")
-
+const {setData, loginData,getData }= require("../repository/db2")
 var CryptoJS = require("crypto-js");
 var SHA256 = require("crypto-js/sha256");
 var crypto = require('crypto');
@@ -51,6 +50,9 @@ const signup = async (name, email, password) => {
     // const hashedText = hash.update(password + salt).digest('hex');
 
     const response = await setData(name, email, HASHTEXT, salt);
+    if(response === 'user already exist'){
+        throw new Error(response);
+    }
     console.log("Response", response);
     return response;
 }
@@ -101,5 +103,8 @@ const login = async (email, PASSWORD) => {
     }
     console.log("auth.service main", response);
 }
-
-module.exports  = {signup , login}; 
+const fetchUser = async(id)=>{
+        const userData = await getData(id);
+        return userData;
+}
+module.exports  = {signup , login , fetchUser}; 
