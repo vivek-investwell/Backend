@@ -4,8 +4,9 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const auth = require('./routes')
 var mysql = require('mysql')
+// const folderPath = './pdf';
 app.use(bodyParser.json());
-//git
+app.use(cookieParser());
 // const pool = require('./dataabase')
 // const{ pool} = require('./repository/db');
 // pool;
@@ -35,6 +36,8 @@ app.use(
   //     console.log("connected")
   //   }
   // })
+  
+
   app.use('/auth',auth)
  
   app.listen(8000, () => {

@@ -2,22 +2,12 @@ const {signup , login, fetchUser} = require('../services')
 // const {signup , login} = require('../services/aes')
 const {secretkey} = require('../constant');
 const  jwt  = require("jsonwebtoken");
+const fs = require('node:fs');
+const folderPath = '/home/vivek/office/first_project/frontend/public/pdf';
+// const folderPath = '/home/vivek/office/first_project/backend/pdf'
+const path = require('path');
 const {uppercaseRegex ,lowercaseRegex , digitRegex , specialRegex} = require('../constant');
-// const signController = async (req, res) => {
-//     try {
-//         const { name, email, password } = req.body;
-//         console.log(name, email, password);
-
-//         const controllerResponse = await signup(name, email, password);
-        
-//         console.log("controllerResponse", controllerResponse);
-//         // res.send("user registered");
-//         res.send(controllerResponse);
-//     } catch (error) {
-//         console.error("Error in signController:", error);
-//         res.status(500).send("Internal Server Error");
-//     }
-// };
+const { json } = require('body-parser');
 
 const signController = async (req, res) => {
     try {
@@ -63,18 +53,7 @@ const signController = async (req, res) => {
     }
 };
 
-// const loginController = async (req, res) => {
-//     try {
-//         const { email, password } = req.body;
-//         const controllerResponse = await login(email, password);
 
-//         console.log("login controller", controllerResponse);
-//         res.send(controllerResponse);
-//     } catch (error) {
-//         console.error("Error in loginController:", error);
-//         res.status(500).send("Internal Server Error");
-//     }
-// };
 const loginController = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -100,17 +79,7 @@ const loginController = async (req, res) => {
         res.send(controllerResponse);
     } catch (error) {
         console.log("sdfds" , error.message);
-        // if (error.message == "User not found") {
-        //     return res.send("user not found");
-        // } else if (error.message == "Incorrect password") {
-        //     // return res.send({
-        //     //     success : false,
-        //     //     message : "Incorrect password"
-        //     // });
-        //     return res.send("Incorrect password")
-        // } else {
-        //     return res.send("Internal Server Error");
-        // }
+   
         res.send({
             "success":"false",
             "message": error.message
@@ -124,4 +93,36 @@ const checkUser = async(req, res)=>{
         const userData = await fetchUser(id);
         return res.send(userData);
 }
-module.exports = {signController , loginController , checkUser};
+
+const readFile=(req , res)=>{
+    const file =  fs.readdirSync(folderPath).map((fileName)=>{
+            const filePath = path.join(folderPath , fileName); 
+            if(path.extname(filePath) === '.pdf'){
+            return filePath;
+            }
+    }).filter(Boolean);
+    console.log(file);
+    const result = []; 
+    file.forEach((single)=>{
+        const name = path.basename(single , path.extname(single));
+        result.push({
+            "name":name,
+            "path": single
+        })
+    })
+    console.log(result);
+          
+    console.log(file);
+    return res.send(result);
+}
+
+const pdfLink = (req, res) => {
+    const file =  fs.readdirSync(folderPath).map((fileName)=>{
+        const filePath = path.join(folderPath , fileName); 
+        if(path.extname(filePath) === '.pdf'){
+        return filePath;
+        }
+}).filter(Boolean);
+    return res.send(file);
+}
+module.exports = {signController , loginController , checkUser, readFile, pdfLink} ;
