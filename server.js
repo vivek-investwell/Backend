@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const auth = require('./routes')
+const redis = require('./redisconnect');
 var mysql = require('mysql')
 // const folderPath = './pdf';
 app.use(bodyParser.json());
@@ -12,6 +13,7 @@ app.use(cookieParser());
 // pool;
 const{ con} = require('./repository/db2');
 con;
+redis;
 const cors = require('cors');
 app.use(
   cors({
@@ -21,22 +23,7 @@ app.use(
     credentials: true,
   })
 );
-  // const pool = mysql.createPool(
-  //   {
-  //       host:"localhost",
-  //       user:"root",
-  //       password:"ajjuvivek123",
-  //       database:"first_project" 
-  //     }
-  // );
-  // pool.getConnection((err , connecttion)=>{
-  //   if(err){
-  //     console.log(err);
-  //   }else{
-  //     console.log("connected")
-  //   }
-  // })
-  
+
 
   app.use('/auth',auth)
  

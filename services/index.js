@@ -1,6 +1,7 @@
 // const {setData, loginData }= require("../repository/db")
 const {setData, loginData,getData }= require("../repository/db2")
 var CryptoJS = require("crypto-js");
+const client = require('../redisconnect');
 var SHA256 = require("crypto-js/sha256");
 var crypto = require('crypto');
 const {Buffer}  = require('buffer');
@@ -39,10 +40,20 @@ const signup = async (name, email, password) => {
     return response;
 }
 
-
 const login = async (email, PASSWORD) => {
     const message = PASSWORD;
+    const user = await client.hGetAll('users');
+    if(user){
+        if(user.email === email){
+            return ([{
+                "id":user.id,
+                "name":user.name,
+                "email":user.email   
+            }])
+        }
+    }
     const response = await loginData(email, PASSWORD);
+    // console.log("res" , response);
     if (response.length > 0) {
         const singleData = response[0];
     // console.log("response",singleData)
@@ -54,6 +65,11 @@ const login = async (email, PASSWORD) => {
 
         if (singleData.password === hashPass) {
             console.log("loggedIn");
+            await client.hSet('users', {
+                id:singleData.id,
+                name:singleData.name,
+                email:singleData.email
+            })
             return response;
         } else {
             throw new Error("Incorrect password");
@@ -64,7 +80,16 @@ const login = async (email, PASSWORD) => {
     console.log("auth.service main", response);
 }
 const fetchUser = async(id)=>{
+        const user = await client.hGetAll('users');
+        console.log(user.id);
+        if(user){
+            return ({
+                "id":user.id,
+                "name":user.name
+            })
+        }
         const userData = await getData(id);
         return userData;
 }
+
 module.exports  = {signup , login , fetchUser}; 
