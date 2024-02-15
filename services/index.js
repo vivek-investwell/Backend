@@ -1,9 +1,9 @@
 // const {setData, loginData }= require("../repository/db")
 const {setData, loginData,getData }= require("../repository/db2")
-var CryptoJS = require("crypto-js");
+const CryptoJS = require("crypto-js");
 const client = require('../redisconnect');
-var SHA256 = require("crypto-js/sha256");
-var crypto = require('crypto');
+const SHA256 = require("crypto-js/sha256");
+const crypto = require('crypto');
 const {Buffer}  = require('buffer');
 const encrypt = (password,salt)=>{
     // const salt = crypto.randomBytes(16).toString('hex');
