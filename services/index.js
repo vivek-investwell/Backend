@@ -1,0 +1,95 @@
+// const {setData, loginData }= require("../repository/db")
+const {setData, loginData,getData }= require("../repository/db2")
+const CryptoJS = require("crypto-js");
+const client = require('../redisconnect');
+const SHA256 = require("crypto-js/sha256");
+const crypto = require('crypto');
+const {Buffer}  = require('buffer');
+const encrypt = (password,salt)=>{
+    // const salt = crypto.randomBytes(16).toString('hex');
+
+    const hash = crypto.createHash('sha256');
+    const hashedText = hash.update(password + salt).digest('hex');
+    return hashedText;
+}
+
+const signup = async (name, email, password) => {
+    console.log("sign up main", name, email, password);
+    if (password.length < 6) {
+        throw new Error("Password too small! Minimum 6 characters allowed");
+    }
+
+    const checkEmail = email.substring(email.length - 10, email.length + 1);
+    if (!(checkEmail === '@gmail.com')) {
+        throw new Error("Not a valid email");
+    }
+
+    const message = password;
+    const salt = crypto.randomBytes(16).toString('hex');
+    const HASHTEXT = encrypt(password , salt);
+    // const SALT = ENCRYPT.salt;
+    // const HASHTEXT = ENCRYPT.hashedText;
+    // const hash = crypto.createHash('sha256');
+    // const hashedText = hash.update(password + salt).digest('hex');
+
+    const response = await setData(name, email, HASHTEXT, salt);
+    if(response === 'user already exist'){
+        throw new Error(response);
+    }
+    console.log("Response", response);
+    return response;
+}
+
+const login = async (email, PASSWORD) => {
+    const message = PASSWORD;
+    const user = await client.hGetAll('users');
+    if(user){
+        if(user.email === email){
+            return ([{
+                "id":user.id,
+                "name":user.name,
+                "email":user.email   
+            }])
+        }
+    }
+    const response = await loginData(email, PASSWORD);
+    // console.log("res" , response);
+    if (response.length > 0) {
+        const singleData = response[0];
+    // console.log("response",singleData)
+        console.log("single", singleData.password);
+        const fetchedSalt = singleData.salt;
+        // const hash = crypto.createHash('sha256');
+        const hashPass = encrypt(PASSWORD , fetchedSalt);
+        // const hashPass = hash.update(PASSWORD + fetchedSalt).digest('hex');
+
+        if (singleData.password === hashPass) {
+            console.log("loggedIn");
+            await client.hSet('users', {
+                id:singleData.id,
+                name:singleData.name,
+                email:singleData.email
+            })
+            return response;
+        } else {
+            throw new Error("Incorrect password");
+        }
+    } else {
+        throw new Error("User not found");
+    }
+    console.log("auth.service main", response);
+}
+const fetchUser = async(id)=>{
+        const user = await client.hGetAll('users');
+        console.log(user.id);
+        if(user){
+            return ({
+                "id":user.id,
+                "name":user.name
+            })
+        }
+        const userData = await getData(id);
+        return userData;
+}
+
+module.exports  = {signup , login , fetchUser}; 
